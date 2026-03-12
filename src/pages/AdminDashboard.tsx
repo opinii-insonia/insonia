@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { AdminTopbar } from '@/components/AdminTopbar';
 import { LeadTable } from '@/components/LeadTable';
@@ -7,17 +7,10 @@ import { useAdminContext } from '@/context/AdminContext';
 import { Users, AlertTriangle, ArrowRight } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { isAuthenticated, leads } = useAdminContext();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isAuthenticated) navigate('/admin');
-  }, [isAuthenticated, navigate]);
-
-  if (!isAuthenticated) return null;
+  const { leads } = useAdminContext();
 
   const highRiskLeads = leads.filter(l => l.overall_risk === 'ALTO').length;
-  const newLeads = leads.filter(l => l.status === 'NOVO').length;
+  const newLeads = leads.filter(l => l.status === 'novo').length;
 
   return (
     <div className="flex min-h-screen bg-slate-50">

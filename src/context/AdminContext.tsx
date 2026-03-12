@@ -2,11 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Lead } from '@/services/storage';
 import { fetchLeads, updateLeadData, appendTimelineEvent } from '@/services/api';
 import { toast } from 'sonner';
+import { useAuthContext } from './AuthContext';
 
 interface AdminContextType {
-  isAuthenticated: boolean;
-  login: (password: string) => boolean;
-  logout: () => void;
   leads: Lead[];
   isLoading: boolean;
   refreshLeads: () => Promise<void>;
@@ -16,30 +14,9 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const auth = localStorage.getItem('admin_auth');
-    if (auth === 'true') setIsAuthenticated(true);
-  }, []);
-
-  const login = (password: string) => {
-    if (password === 'admin123') {
-      setIsAuthenticated(true);
-      localStorage.setItem('admin_auth', 'true');
-      refreshLeads();
-      return true;
-    }
-    return false;
-  };
-
-  const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('admin_auth');
-    setLeads([]);
-  };
+  const { user } = useAuthContext();
 
   const refreshLeads = async () => {
     try {
@@ -57,14 +34,11 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const changeLeadStatus = async (id: string, status: Lead['status']) => {
     const toastId = toast.loading("Atualizando status...");
     try {
-      // 1. Atualiza no banco (simulado)
       await updateLeadData(id, { status });
       await appendTimelineEvent(id, {
         type: 'status',
         description: `Status alterado para: ${status.replace('_', ' ').toUpperCase()}`
       });
-      
-      // 2. Recarrega os dados
       await refreshLeads();
       toast.success("Status atualizado com sucesso!", { id: toastId });
     } catch (error) {
@@ -72,14 +46,17 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Carrega os leads automaticamente sempre que um administrador estiver logado
   useEffect(() => {
-    if (isAuthenticated) {
+    if (user?.role === 'admin') {
       refreshLeads();
+    } else {
+      setLeads([]);
     }
-  }, [isAuthenticated]);
+  }, [user]);
 
   return (
-    <AdminContext.Provider value={{ isAuthenticated, login, logout, leads, isLoading, refreshLeads, changeLeadStatus }}>
+    <AdminContext.Provider value={{ leads, isLoading, refreshLeads, changeLeadStatus }}>
       {children}
     </AdminContext.Provider>
   );
