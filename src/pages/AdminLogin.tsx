@@ -28,7 +28,7 @@ const AdminLogin = () => {
     if (login(email, password)) {
       navigate('/admin/dashboard');
     } else {
-      setError('Credenciais incorretas. (Dica: admin123)');
+      setError('Credenciais incorretas.');
     }
   };
 
@@ -53,7 +53,7 @@ const AdminLogin = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                placeholder="admin@plataforma.com"
+                placeholder="admin@insonia.com"
               />
             </div>
           </div>

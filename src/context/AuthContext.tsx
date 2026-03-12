@@ -24,9 +24,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const login = (email: string, pass: string) => {
-    // Mock de validação: E-mail fixo ou qualquer formato válido e senha "admin123"
-    // No futuro, isso será substituído por supabase.auth.signInWithPassword()
-    if (email.includes('@') && pass === 'admin123') {
+    // Validação estrita para o e-mail e senha solicitados
+    if (email === 'admin@insonia.com' && pass === 'Insonia2026') {
       const adminUser = { email, role: 'admin' };
       setUser(adminUser);
       localStorage.setItem(SESSION_KEY, JSON.stringify(adminUser));
