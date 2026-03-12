@@ -13,6 +13,7 @@ export interface Lead {
   nome: string;
   idade: string;
   sexo: string;
+  estado: string;
   cidade: string;
   telefone: string;
   email: string;
@@ -44,17 +45,26 @@ export const getLeads = (): Lead[] => {
 export const saveLead = (leadData: Partial<Lead>) => {
   const leads = getLeads();
   
-  // Define prioridade baseada no risco
   let prioridade: LeadPriority = 'baixa';
   if (leadData.overall_risk === 'ALTO') prioridade = 'alta';
   else if (leadData.overall_risk === 'MODERADO') prioridade = 'media';
+
+  // Backward compatibility para leads que salvavam a cidade como "Cidade - UF"
+  let estado = leadData.estado || '';
+  let cidade = leadData.cidade || '';
+  if (!estado && cidade.includes(' - ')) {
+    const parts = cidade.split(' - ');
+    cidade = parts[0];
+    estado = parts[1];
+  }
 
   const newLead: Lead = {
     id: crypto.randomUUID(),
     nome: leadData.nome || '',
     idade: leadData.idade || '',
     sexo: leadData.sexo || '',
-    cidade: leadData.cidade || '',
+    estado: estado,
+    cidade: cidade,
     telefone: leadData.telefone || '',
     email: leadData.email || '',
     epworth_score: leadData.epworth_score || 0,

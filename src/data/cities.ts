@@ -1,67 +1,26 @@
-export const citiesByState = {
+export const citiesByState: Record<string, string[]> = {
   DF: [
-    "Águas Claras",
-    "Arniqueira",
-    "Asa Norte",
-    "Asa Sul",
-    "Brazlândia",
-    "Candangolândia",
-    "Ceilândia",
-    "Cruzeiro",
-    "Fercal",
-    "Gama",
-    "Guará",
-    "Itapoã",
-    "Jardim Botânico",
-    "Lago Norte",
-    "Lago Sul",
-    "Núcleo Bandeirante",
-    "Paranoá",
-    "Park Way",
-    "Planaltina",
-    "Recanto das Emas",
-    "Riacho Fundo",
-    "Riacho Fundo II",
-    "Samambaia",
-    "Santa Maria",
-    "São Sebastião",
-    "SCIA / Estrutural",
-    "Sobradinho",
-    "Sobradinho II",
-    "Sudoeste / Octogonal",
-    "Taguatinga",
-    "Varjão",
-    "Vicente Pires"
+    "Águas Claras", "Arniqueira", "Asa Norte", "Asa Sul", "Brazlândia",
+    "Candangolândia", "Ceilândia", "Cruzeiro", "Fercal", "Gama",
+    "Guará", "Itapoã", "Jardim Botânico", "Lago Norte", "Lago Sul",
+    "Núcleo Bandeirante", "Paranoá", "Park Way", "Planaltina",
+    "Recanto das Emas", "Riacho Fundo", "Riacho Fundo II", "Samambaia",
+    "Santa Maria", "São Sebastião", "SCIA / Estrutural", "Sobradinho",
+    "Sobradinho II", "Sudoeste / Octogonal", "Taguatinga", "Varjão", "Vicente Pires"
   ],
   GO: [
-    // Principais cidades de GO
-    "Goiânia",
-    "Aparecida de Goiânia",
-    "Anápolis",
-    "Rio Verde",
-    "Luziânia",
-    "Valparaíso de Goiás",
-    "Águas Lindas de Goiás",
-    "Formosa",
-    "Trindade",
-    "Senador Canedo",
-    "Catalão",
-    "Itumbiara",
-    "Jataí",
-
+    // Principais
+    "Goiânia", "Aparecida de Goiânia", "Anápolis", "Rio Verde", "Luziânia",
+    "Valparaíso de Goiás", "Águas Lindas de Goiás", "Formosa", "Trindade",
+    "Senador Canedo", "Catalão", "Itumbiara", "Jataí",
     // Entorno do DF
-    "Cidade Ocidental",
-    "Novo Gama",
-    "Santo Antônio do Descoberto",
-    "Planaltina de Goiás",
-    "Padre Bernardo",
-    "Cristalina",
-    "Cocalzinho de Goiás",
-    "Alexânia",
-    "Cabeceiras",
-    "Mimoso de Goiás",
-    "Água Fria de Goiás",
-    "Vila Boa",
-    "Flores de Goiás"
-  ]
+    "Cidade Ocidental", "Novo Gama", "Santo Antônio do Descoberto",
+    "Planaltina de Goiás", "Padre Bernardo", "Cristalina", "Cocalzinho de Goiás",
+    "Alexânia", "Cabeceiras", "Mimoso de Goiás", "Água Fria de Goiás",
+    "Vila Boa", "Flores de Goiás"
+  ],
+  // Mock para os outros estados apenas para o formulário não quebrar se escolherem SP, por exemplo
+  SP: ["São Paulo", "Guarulhos", "Campinas", "São Bernardo do Campo", "Santo André"],
+  RJ: ["Rio de Janeiro", "São Gonçalo", "Duque de Caxias", "Nova Iguaçu", "Niterói"],
+  MG: ["Belo Horizonte", "Uberlândia", "Contagem", "Juiz de Fora", "Betim"]
 };

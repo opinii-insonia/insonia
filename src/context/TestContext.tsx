@@ -4,6 +4,7 @@ export type UserInfo = {
   nome: string;
   idade: string;
   sexo: string;
+  estado: string;
   cidade: string;
 };
 
@@ -24,7 +25,7 @@ interface TestContextType {
   resetTest: () => void;
 }
 
-const defaultUserInfo = { nome: '', idade: '', sexo: '', cidade: '' };
+const defaultUserInfo = { nome: '', idade: '', sexo: '', estado: '', cidade: '' };
 const defaultContactInfo = { telefone: '', email: '' };
 
 const TestContext = createContext<TestContextType | undefined>(undefined);
@@ -33,7 +34,6 @@ const LOCAL_STORAGE_KEY = '@insonia_draft';
 
 export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   
-  // Inicializa o state a partir do localStorage ou usa os valores default
   const [userInfo, setUserInfo] = useState<UserInfo>(() => {
     const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_user`);
     return saved ? JSON.parse(saved) : defaultUserInfo;
@@ -54,7 +54,6 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved ? JSON.parse(saved) : defaultContactInfo;
   });
 
-  // Salva no localStorage sempre que algum valor mudar
   useEffect(() => {
     localStorage.setItem(`${LOCAL_STORAGE_KEY}_user`, JSON.stringify(userInfo));
   }, [userInfo]);

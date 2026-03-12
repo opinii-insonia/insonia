@@ -3,13 +3,13 @@ import { Lead } from '@/services/storage';
 export const exportLeadsToCSV = (leads: Lead[]) => {
   if (!leads || leads.length === 0) return;
 
-  // Define the headers
   const headers = [
     'ID', 
     'Data Avaliacao', 
     'Nome', 
     'Idade', 
-    'Sexo', 
+    'Sexo',
+    'Estado',
     'Cidade', 
     'Telefone', 
     'Email',
@@ -22,7 +22,6 @@ export const exportLeadsToCSV = (leads: Lead[]) => {
     'Prioridade'
   ];
 
-  // Helper to safely format strings for CSV (handling commas, etc.)
   const escapeCSV = (value: string | number | undefined | null) => {
     if (value === null || value === undefined) return '';
     const stringValue = String(value);
@@ -32,7 +31,6 @@ export const exportLeadsToCSV = (leads: Lead[]) => {
     return stringValue;
   };
 
-  // Build the CSV content
   const csvContent = [
     headers.join(','),
     ...leads.map(lead => [
@@ -41,6 +39,7 @@ export const exportLeadsToCSV = (leads: Lead[]) => {
       escapeCSV(lead.nome),
       escapeCSV(lead.idade),
       escapeCSV(lead.sexo),
+      escapeCSV(lead.estado),
       escapeCSV(lead.cidade),
       escapeCSV(lead.telefone),
       escapeCSV(lead.email),
@@ -54,8 +53,7 @@ export const exportLeadsToCSV = (leads: Lead[]) => {
     ].join(','))
   ].join('\n');
 
-  // Create a Blob and trigger download
-  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' }); // \uFEFF for Excel UTF-8 BOM
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.setAttribute('href', url);

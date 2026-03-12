@@ -13,7 +13,6 @@ interface LeadTableProps {
   showFilters?: boolean;
 }
 
-// Fixed status names to match the LeadStatus type from storage.ts
 const statusConfig: Record<string, { label: string, color: string }> = {
   novo: { label: 'Novo', color: 'bg-blue-100 text-blue-800 border-blue-200' },
   contato_pendente: { label: 'Contato Pendente', color: 'bg-amber-100 text-amber-800 border-amber-200' },
@@ -27,20 +26,19 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
   const { changeLeadStatus } = useAdminContext();
   const navigate = useNavigate();
 
-  // Estados dos filtros
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [riskFilter, setRiskFilter] = useState<string>('all');
 
-  // Lógica de filtragem (ignorada se limit for passado, para o dashboard)
   let filteredLeads = leads;
   
   if (showFilters) {
     filteredLeads = leads.filter(lead => {
+      const locString = `${lead.cidade} ${lead.estado}`.toLowerCase();
       const matchSearch = lead.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           lead.telefone.includes(searchTerm) ||
-                          (lead.cidade && lead.cidade.toLowerCase().includes(searchTerm.toLowerCase()));
+                          locString.includes(searchTerm.toLowerCase());
       
       const matchStatus = statusFilter === 'all' || lead.status === statusFilter;
       const matchRisk = riskFilter === 'all' || lead.overall_risk === riskFilter;
@@ -70,8 +68,6 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
 
   return (
     <div className="space-y-4">
-      
-      {/* Barra de Filtros (Apenas exibe se showFilters for true) */}
       {showFilters && (
         <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row gap-4 items-center">
           <div className="relative flex-1 w-full">
@@ -115,7 +111,6 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
         </div>
       )}
 
-      {/* Tabela de Leads */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[800px]">
@@ -145,7 +140,7 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
                     <td className="px-6 py-4">
                       <div className="font-semibold text-slate-800">{lead.nome}</div>
                       <div className="text-xs text-slate-500 mt-0.5">
-                        {lead.idade} anos • {lead.sexo} {lead.cidade ? `• ${lead.cidade}` : ''}
+                        {lead.idade} anos • {lead.sexo} {lead.cidade ? `• ${lead.cidade} - ${lead.estado}` : ''}
                       </div>
                     </td>
                     <td className="px-6 py-4">
