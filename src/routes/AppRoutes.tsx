@@ -4,7 +4,9 @@ import { Routes, Route } from "react-router-dom";
 // Client Pages
 import Home from "@/pages/Home";
 import EpworthTest from "@/pages/EpworthTest";
+import EpworthResult from "@/pages/EpworthResult";
 import InsomniaTest from "@/pages/InsomniaTest";
+import InsomniaResult from "@/pages/InsomniaResult";
 import LeadCapture from "@/pages/LeadCapture";
 import ResultPage from "@/pages/ResultPage";
 import NotFound from "@/pages/NotFound";
@@ -23,7 +25,9 @@ export const AppRoutes = () => {
       {/* Fluxo do Paciente */}
       <Route path="/" element={<Home />} />
       <Route path="/epworth" element={<EpworthTest />} />
+      <Route path="/epworth-result" element={<EpworthResult />} />
       <Route path="/insomnia" element={<InsomniaTest />} />
+      <Route path="/insomnia-result" element={<InsomniaResult />} />
       <Route path="/lead-capture" element={<LeadCapture />} />
       <Route path="/resultado" element={<ResultPage />} />
       

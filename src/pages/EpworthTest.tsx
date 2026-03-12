@@ -40,7 +40,7 @@ const EpworthTest = () => {
 
   const handleNext = () => {
     setEpworthAnswers(localAnswers);
-    navigate('/insomnia');
+    navigate('/epworth-result');
   };
 
   const answeredCount = localAnswers.filter(a => a !== -1).length;
@@ -84,7 +84,7 @@ const EpworthTest = () => {
               : 'bg-slate-200 text-slate-400 cursor-not-allowed'
           }`}
         >
-          Continuar para Parte 2
+          Ver Resultado Parcial
         </button>
       </div>
     </div>

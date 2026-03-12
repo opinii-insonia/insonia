@@ -67,7 +67,7 @@ const InsomniaTest = () => {
 
   const handleNext = () => {
     setInsomniaAnswers(localAnswers);
-    navigate('/lead-capture');
+    navigate('/insomnia-result');
   };
 
   const answeredCount = localAnswers.filter(a => a !== -1).length;
@@ -111,7 +111,7 @@ const InsomniaTest = () => {
 
         <div className="flex space-x-4">
           <button
-            onClick={() => navigate('/epworth')}
+            onClick={() => navigate('/epworth-result')}
             className="w-1/3 py-4 rounded-xl font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
           >
             Voltar
@@ -125,7 +125,7 @@ const InsomniaTest = () => {
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
-            Ver Resultados
+            Ver Resultado Parcial
           </button>
         </div>
       </div>
