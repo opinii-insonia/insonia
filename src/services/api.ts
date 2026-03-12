@@ -1,15 +1,18 @@
-/**
- * Simula o envio de dados para uma API REST ou Supabase.
- * Prepara o objeto completo para inserção no banco de dados.
- */
+import { saveLead } from './storage';
+import { calculateOverallRisk } from '@/utils/calculateOverallRisk';
+
 export const submitTestResult = async (data: any) => {
-  console.log("=== ENVIANDO DADOS PARA O SERVIDOR ===");
-  console.log("Payload estruturado para banco de dados:");
-  console.log(JSON.stringify(data, null, 2));
-  
   // Simula um delay de rede
   return new Promise((resolve) => {
     setTimeout(() => {
+      const risk = calculateOverallRisk(data.epworth_score, data.insomnia_score);
+      
+      saveLead({
+        ...data,
+        data_resposta: new Date().toISOString(),
+        overall_risk: risk
+      });
+
       resolve({ success: true, message: "Dados salvos com sucesso!" });
     }, 1000);
   });
