@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTestContext } from '@/context/TestContext';
 import { Activity } from 'lucide-react';
+import { citiesByState } from '@/data/cities';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -77,14 +78,23 @@ const Home = () => {
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Cidade</label>
-            <input
-              type="text"
+            <select
               name="cidade"
               value={userInfo.cidade}
               onChange={handleChange}
-              placeholder="Sua cidade"
-              className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-            />
+              className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-white"
+            >
+              <option value="">Selecione sua cidade</option>
+              {Object.entries(citiesByState).map(([state, cities]) => (
+                <optgroup key={state} label={state}>
+                  {cities.map((city) => (
+                    <option key={city} value={`${city} - ${state}`}>
+                      {city}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
           </div>
 
           <button
