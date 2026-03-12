@@ -1,13 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getLeads, Lead, updateLead, addTimelineEvent } from '@/services/storage';
+import { Lead } from '@/services/storage';
+import { fetchLeads, updateLeadData, appendTimelineEvent } from '@/services/api';
+import { toast } from 'sonner';
 
 interface AdminContextType {
   isAuthenticated: boolean;
   login: (password: string) => boolean;
   logout: () => void;
   leads: Lead[];
-  refreshLeads: () => void;
-  changeLeadStatus: (id: string, status: Lead['status']) => void;
+  isLoading: boolean;
+  refreshLeads: () => Promise<void>;
+  changeLeadStatus: (id: string, status: Lead['status']) => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -15,6 +18,7 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const auth = localStorage.getItem('admin_auth');
@@ -22,7 +26,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const login = (password: string) => {
-    if (password === 'admin123') { // Mock simples de senha
+    if (password === 'admin123') {
       setIsAuthenticated(true);
       localStorage.setItem('admin_auth', 'true');
       refreshLeads();
@@ -34,29 +38,48 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const logout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('admin_auth');
+    setLeads([]);
   };
 
-  const refreshLeads = () => {
-    setLeads(getLeads().sort((a, b) => new Date(b.data_resposta).getTime() - new Date(a.data_resposta).getTime()));
+  const refreshLeads = async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetchLeads();
+      setLeads(data);
+    } catch (error) {
+      toast.error("Erro ao carregar os leads.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const changeLeadStatus = (id: string, status: Lead['status']) => {
-    // Atualiza o status e adiciona na timeline (histórico)
-    updateLead(id, { status });
-    addTimelineEvent(id, {
-      type: 'status',
-      description: `Status alterado para: ${status.replace('_', ' ').toUpperCase()}`
-    });
-    refreshLeads();
+  const changeLeadStatus = async (id: string, status: Lead['status']) => {
+    const toastId = toast.loading("Atualizando status...");
+    try {
+      // 1. Atualiza no banco (simulado)
+      await updateLeadData(id, { status });
+      await appendTimelineEvent(id, {
+        type: 'status',
+        description: `Status alterado para: ${status.replace('_', ' ').toUpperCase()}`
+      });
+      
+      // 2. Recarrega os dados
+      await refreshLeads();
+      toast.success("Status atualizado com sucesso!", { id: toastId });
+    } catch (error) {
+      toast.error("Erro ao atualizar status", { id: toastId });
+    }
   };
 
-  // Carrega os leads se estiver logado
   useEffect(() => {
-    if (isAuthenticated) refreshLeads();
+    if (isAuthenticated) {
+      refreshLeads();
+    }
   }, [isAuthenticated]);
 
   return (
-    <AdminContext.Provider value={{ isAuthenticated, login, logout, leads, refreshLeads, changeLeadStatus }}>
+    <AdminContext.Provider value={{ isAuthenticated, login, logout, leads, isLoading, refreshLeads, changeLeadStatus }}>
       {children}
     </AdminContext.Provider>
   );

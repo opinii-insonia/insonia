@@ -2,49 +2,99 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { AdminTopbar } from '@/components/AdminTopbar';
-import { getLeads, Lead, updateLead, addTimelineEvent } from '@/services/storage';
+import { Lead } from '@/services/storage';
+import { fetchLeadById, updateLeadData, appendTimelineEvent } from '@/services/api';
 import { riskRules } from '@/data/riskRules';
 import { formatDate } from '@/utils/formatDate';
-import { ArrowLeft, Phone, Mail, MapPin, Calendar, Activity, Clock, FileText, Send } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, MapPin, Calendar, Activity, Clock, FileText, Send, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const AdminLeadDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [lead, setLead] = useState<Lead | null>(null);
   const [newObs, setNewObs] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const loadLeadData = async () => {
+    if (!id) return;
+    try {
+      setIsLoading(true);
+      const found = await fetchLeadById(id);
+      if (found) {
+        setLead(found);
+      } else {
+        toast.error("Paciente não encontrado.");
+        navigate('/admin/leads');
+      }
+    } catch (error) {
+      toast.error("Erro ao buscar detalhes do paciente.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const leads = getLeads();
-    const found = leads.find(l => l.id === id);
-    if (found) setLead(found);
-    else navigate('/admin/leads');
+    loadLeadData();
   }, [id, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen bg-slate-50 items-center justify-center">
+        <div className="flex flex-col items-center text-blue-600">
+          <Loader2 className="animate-spin mb-4" size={40} />
+          <p className="font-medium">Carregando ficha do paciente...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!lead) return null;
 
   const risk = riskRules[lead.overall_risk as keyof typeof riskRules] || riskRules.BAIXO;
 
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStatus = e.target.value as Lead['status'];
-    updateLead(lead.id, { status: newStatus });
-    addTimelineEvent(lead.id, {
-      type: 'status',
-      description: `Status alterado para: ${newStatus.replace('_', ' ').toUpperCase()}`
-    });
-    setLead(getLeads().find(l => l.id === id) || null);
+    const toastId = toast.loading("Atualizando status...");
+    setIsUpdating(true);
+    
+    try {
+      await updateLeadData(lead.id, { status: newStatus });
+      await appendTimelineEvent(lead.id, {
+        type: 'status',
+        description: `Status alterado para: ${newStatus.replace('_', ' ').toUpperCase()}`
+      });
+      await loadLeadData();
+      toast.success("Status atualizado!", { id: toastId });
+    } catch (error) {
+      toast.error("Falha ao atualizar", { id: toastId });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
-  const handleAddObs = (e: React.FormEvent) => {
+  const handleAddObs = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newObs.trim()) return;
     
-    addTimelineEvent(lead.id, {
-      type: 'observacao',
-      description: newObs
-    });
-    updateLead(lead.id, { observacoes: newObs }); // Salva a última obs também
-    setNewObs('');
-    setLead(getLeads().find(l => l.id === id) || null);
+    const toastId = toast.loading("Adicionando observação...");
+    setIsUpdating(true);
+
+    try {
+      await appendTimelineEvent(lead.id, {
+        type: 'observacao',
+        description: newObs
+      });
+      await updateLeadData(lead.id, { observacoes: newObs });
+      setNewObs('');
+      await loadLeadData();
+      toast.success("Observação salva!", { id: toastId });
+    } catch (error) {
+      toast.error("Falha ao salvar observação", { id: toastId });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -92,11 +142,11 @@ const AdminLeadDetails = () => {
                   </div>
                   <div className="flex items-center p-3 bg-slate-50 rounded-xl">
                     <Mail className="text-blue-500 mr-3" size={20} />
-                    <span className="text-slate-700 font-medium truncate">{lead.email}</span>
+                    <span className="text-slate-700 font-medium truncate" title={lead.email}>{lead.email}</span>
                   </div>
                   <div className="flex items-center p-3 bg-slate-50 rounded-xl">
                     <MapPin className="text-blue-500 mr-3" size={20} />
-                    <span className="text-slate-700 font-medium">{lead.cidade || 'Não informada'}</span>
+                    <span className="text-slate-700 font-medium">{lead.cidade ? `${lead.cidade} - ${lead.estado}` : 'Não informada'}</span>
                   </div>
                   <div className="flex items-center p-3 bg-slate-50 rounded-xl">
                     <Calendar className="text-blue-500 mr-3" size={20} />
@@ -109,7 +159,7 @@ const AdminLeadDetails = () => {
               <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center">
                   <Activity className="text-blue-500 mr-2" size={22} />
-                  Resultados da Avaliação Clínia
+                  Resultados da Avaliação Clínica
                 </h3>
                 
                 <div className="grid grid-cols-2 gap-6">
@@ -157,7 +207,8 @@ const AdminLeadDetails = () => {
                   <select
                     value={lead.status}
                     onChange={handleStatusChange}
-                    className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 font-medium"
+                    disabled={isUpdating}
+                    className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 font-medium disabled:opacity-50"
                   >
                     <option value="novo">Novo</option>
                     <option value="contato_pendente">Contato Pendente</option>
@@ -185,7 +236,7 @@ const AdminLeadDetails = () => {
                 </h3>
                 
                 <div className="flex-1 overflow-y-auto pr-2 space-y-6 mb-4">
-                  {lead.timeline?.map((event, index) => (
+                  {lead.timeline?.map((event) => (
                     <div key={event.id} className="relative pl-6 border-l-2 border-slate-100 pb-2">
                       <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-4 border-white ${
                         event.type === 'criacao' ? 'bg-emerald-500' :
@@ -205,14 +256,16 @@ const AdminLeadDetails = () => {
                     type="text" 
                     value={newObs}
                     onChange={(e) => setNewObs(e.target.value)}
+                    disabled={isUpdating}
                     placeholder="Adicionar observação..."
-                    className="w-full p-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 transition-colors"
+                    className="w-full p-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
                   />
                   <button 
                     type="submit"
-                    className="absolute right-3 top-7 text-blue-600 hover:text-blue-800"
+                    disabled={isUpdating}
+                    className="absolute right-3 top-7 text-blue-600 hover:text-blue-800 disabled:opacity-50"
                   >
-                    <Send size={20} />
+                    {isUpdating ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
                   </button>
                 </form>
               </div>
