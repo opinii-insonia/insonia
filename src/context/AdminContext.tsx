@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Lead } from '@/services/storage';
-import { fetchLeads, updateLeadData, appendTimelineEvent } from '@/services/api';
+import { Lead, fetchLeads, updateLeadData, appendTimelineEvent } from '@/services/api';
 import { toast } from 'sonner';
 import { useAuthContext } from './AuthContext';
 

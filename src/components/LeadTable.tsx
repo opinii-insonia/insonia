@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lead } from '@/services/storage';
+import { Lead } from '@/services/api';
 import { useAdminContext } from '@/context/AdminContext';
 import { riskRules } from '@/data/riskRules';
 import { formatDate } from '@/utils/formatDate';

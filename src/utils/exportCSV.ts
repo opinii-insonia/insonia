@@ -1,4 +1,4 @@
-import { Lead } from '@/services/storage';
+import { Lead } from '@/services/api';
 
 export const exportLeadsToCSV = (leads: Lead[]) => {
   if (!leads || leads.length === 0) return;

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import { scaleLinear } from 'd3-scale';
-import { Lead } from '@/services/storage';
+import { Lead } from '@/services/api';
 import { Map, MapPin } from 'lucide-react';
 
 const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/brazil/brazil-states.json";
