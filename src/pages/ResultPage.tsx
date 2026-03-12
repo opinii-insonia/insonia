@@ -50,7 +50,7 @@ const ResultPage = () => {
       <div className="max-w-3xl mx-auto">
         
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">Seu Relatório de Sono</h1>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Seu Relatório InsônIA</h1>
           <p className="text-slate-500">Avaliação concluída com sucesso para <span className="font-semibold text-slate-700">{userInfo.nome}</span></p>
         </div>
 

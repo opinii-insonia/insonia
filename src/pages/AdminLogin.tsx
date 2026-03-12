@@ -20,7 +20,10 @@ const AdminLogin = () => {
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-center text-slate-800 mb-6">Acesso Administrativo</h1>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-blue-600 tracking-tight">InsônIA</h1>
+          <h2 className="text-lg font-medium text-slate-600 mt-1">Acesso Administrativo</h2>
+        </div>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Senha de Acesso</label>

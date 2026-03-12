@@ -16,7 +16,7 @@ export const AdminSidebar = () => {
   return (
     <div className="w-64 bg-slate-900 text-white min-h-screen flex flex-col">
       <div className="p-6">
-        <h2 className="text-xl font-bold text-blue-400">SleepAdmin</h2>
+        <h2 className="text-xl font-bold text-blue-400">InsônIA Admin</h2>
       </div>
       <nav className="flex-1 px-4 space-y-2">
         {links.map(link => (

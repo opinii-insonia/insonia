@@ -9,7 +9,7 @@ export const generatePDF = (data: any) => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(22);
   doc.setTextColor(30, 58, 138); // Azul escuro
-  doc.text("Relatório de Qualidade do Sono", marginX, cursorY);
+  doc.text("Relatório de Qualidade do Sono - InsônIA", marginX, cursorY);
   
   cursorY += 15;
   doc.setFontSize(12);
@@ -58,7 +58,9 @@ export const generatePDF = (data: any) => {
   cursorY += 30;
   doc.setFontSize(10);
   doc.setTextColor(150, 150, 150);
-  doc.text("Este é um relatório gerado automaticamente e não substitui avaliação médica.", marginX, cursorY);
+  doc.text("Este relatório foi gerado automaticamente pela plataforma InsônIA.", marginX, cursorY);
+  cursorY += 5;
+  doc.text("Ele não substitui uma avaliação ou diagnóstico médico.", marginX, cursorY);
 
-  doc.save(`Resultado_Sono_${data.nome.replace(/\s+/g, '_')}.pdf`);
+  doc.save(`Resultado_Sono_InsonIA_${data.nome.replace(/\s+/g, '_')}.pdf`);
 };

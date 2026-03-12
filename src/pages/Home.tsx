@@ -29,8 +29,8 @@ const Home = () => {
           <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
             <Activity className="text-white" size={32} />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Avaliação de Sono</h1>
-          <p className="text-blue-100 text-sm">Descubra a qualidade do seu descanso em poucos minutos.</p>
+          <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">InsônIA</h1>
+          <p className="text-blue-100 text-sm">Descubra a qualidade do seu descanso em poucos minutos com nossa avaliação inteligente.</p>
         </div>
         
         <form onSubmit={handleSubmit} className="p-8 space-y-5">
