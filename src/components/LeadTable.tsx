@@ -13,11 +13,14 @@ interface LeadTableProps {
   showFilters?: boolean;
 }
 
-const statusConfig = {
-  NOVO: { label: 'Novo', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-  EM_CONTATO: { label: 'Em Contato', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-  AGENDADO: { label: 'Agendado', color: 'bg-purple-100 text-purple-800 border-purple-200' },
-  CONCLUIDO: { label: 'Concluído', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+// Fixed status names to match the LeadStatus type from storage.ts
+const statusConfig: Record<string, { label: string, color: string }> = {
+  novo: { label: 'Novo', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+  contato_pendente: { label: 'Contato Pendente', color: 'bg-amber-100 text-amber-800 border-amber-200' },
+  em_atendimento: { label: 'Em Atendimento', color: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
+  retorno_agendado: { label: 'Retorno Agendado', color: 'bg-purple-100 text-purple-800 border-purple-200' },
+  convertido: { label: 'Convertido', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+  encerrado: { label: 'Encerrado', color: 'bg-slate-100 text-slate-800 border-slate-200' },
 };
 
 export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters = false }) => {
@@ -176,7 +179,7 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
                       <select
                         value={lead.status}
                         onChange={(e) => changeLeadStatus(lead.id, e.target.value as Lead['status'])}
-                        className={`text-sm border rounded-xl px-3 py-1.5 outline-none focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer appearance-none pr-8 bg-no-repeat font-medium ${statusConfig[lead.status]?.color || statusConfig['NOVO'].color}`}
+                        className={`text-sm border rounded-xl px-3 py-1.5 outline-none focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer appearance-none pr-8 bg-no-repeat font-medium ${statusConfig[lead.status]?.color || statusConfig['novo'].color}`}
                         style={{
                           backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
                           backgroundPosition: 'right 0.5rem center',

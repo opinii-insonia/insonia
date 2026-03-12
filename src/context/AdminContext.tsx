@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getLeads, Lead, updateLeadStatus } from '@/services/storage';
+import { getLeads, Lead, updateLead, addTimelineEvent } from '@/services/storage';
 
 interface AdminContextType {
   isAuthenticated: boolean;
@@ -41,7 +41,12 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const changeLeadStatus = (id: string, status: Lead['status']) => {
-    updateLeadStatus(id, status);
+    // Atualiza o status e adiciona na timeline (histórico)
+    updateLead(id, { status });
+    addTimelineEvent(id, {
+      type: 'status',
+      description: `Status alterado para: ${status.replace('_', ' ').toUpperCase()}`
+    });
     refreshLeads();
   };
 
