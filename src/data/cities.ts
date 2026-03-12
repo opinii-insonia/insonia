@@ -1,4 +1,10 @@
 export const citiesByState: Record<string, string[]> = {
+  AC: ["Rio Branco"],
+  AL: ["Maceió"],
+  AP: ["Macapá"],
+  AM: ["Manaus"],
+  BA: ["Salvador"],
+  CE: ["Fortaleza"],
   DF: [
     "Águas Claras", "Arniqueira", "Asa Norte", "Asa Sul", "Brazlândia",
     "Candangolândia", "Ceilândia", "Cruzeiro", "Fercal", "Gama",
@@ -8,6 +14,7 @@ export const citiesByState: Record<string, string[]> = {
     "Santa Maria", "São Sebastião", "SCIA / Estrutural", "Sobradinho",
     "Sobradinho II", "Sudoeste / Octogonal", "Taguatinga", "Varjão", "Vicente Pires"
   ],
+  ES: ["Vitória"],
   GO: [
     // Principais
     "Goiânia", "Aparecida de Goiânia", "Anápolis", "Rio Verde", "Luziânia",
@@ -19,8 +26,22 @@ export const citiesByState: Record<string, string[]> = {
     "Alexânia", "Cabeceiras", "Mimoso de Goiás", "Água Fria de Goiás",
     "Vila Boa", "Flores de Goiás"
   ],
-  // Mock para os outros estados apenas para o formulário não quebrar se escolherem SP, por exemplo
-  SP: ["São Paulo", "Guarulhos", "Campinas", "São Bernardo do Campo", "Santo André"],
+  MA: ["São Luís"],
+  MT: ["Cuiabá"],
+  MS: ["Campo Grande"],
+  MG: ["Belo Horizonte", "Uberlândia", "Contagem", "Juiz de Fora", "Betim"],
+  PA: ["Belém"],
+  PB: ["João Pessoa"],
+  PR: ["Curitiba"],
+  PE: ["Recife"],
+  PI: ["Teresina"],
   RJ: ["Rio de Janeiro", "São Gonçalo", "Duque de Caxias", "Nova Iguaçu", "Niterói"],
-  MG: ["Belo Horizonte", "Uberlândia", "Contagem", "Juiz de Fora", "Betim"]
+  RN: ["Natal"],
+  RS: ["Porto Alegre"],
+  RO: ["Porto Velho"],
+  RR: ["Boa Vista"],
+  SC: ["Florianópolis"],
+  SP: ["São Paulo", "Guarulhos", "Campinas", "São Bernardo do Campo", "Santo André"],
+  SE: ["Aracaju"],
+  TO: ["Palmas"]
 };
