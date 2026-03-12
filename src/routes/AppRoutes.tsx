@@ -13,6 +13,7 @@ import NotFound from "@/pages/NotFound";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminLeads from "@/pages/AdminLeads";
+import AdminLeadDetails from "@/pages/AdminLeadDetails";
 import AdminReports from "@/pages/AdminReports";
 import AdminSettings from "@/pages/AdminSettings";
 
@@ -30,6 +31,7 @@ export const AppRoutes = () => {
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/leads" element={<AdminLeads />} />
+      <Route path="/admin/leads/:id" element={<AdminLeadDetails />} />
       <Route path="/admin/reports" element={<AdminReports />} />
       <Route path="/admin/settings" element={<AdminSettings />} />
 
