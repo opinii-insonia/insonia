@@ -5,7 +5,9 @@ import { useAdminContext } from '@/context/AdminContext';
 import { riskRules } from '@/data/riskRules';
 import { formatDate } from '@/utils/formatDate';
 import { generatePDF } from '@/utils/generatePDF';
-import { Phone, Mail, Calendar, Activity, Eye, FileText, Search, Filter } from 'lucide-react';
+import { BRAZIL_STATES } from '@/data/states';
+import { citiesByState } from '@/data/cities';
+import { Phone, Mail, Calendar, Activity, Eye, FileText, Search, Filter, MapPin } from 'lucide-react';
 
 interface LeadTableProps {
   leads: Lead[];
@@ -29,6 +31,15 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [riskFilter, setRiskFilter] = useState<string>('all');
+  const [stateFilter, setStateFilter] = useState<string>('all');
+  const [cityFilter, setCityFilter] = useState<string>('all');
+
+  const availableCities = stateFilter !== 'all' ? citiesByState[stateFilter] || [] : [];
+
+  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStateFilter(e.target.value);
+    setCityFilter('all'); // Reseta a cidade ao trocar o estado
+  };
 
   let filteredLeads = leads;
   
@@ -42,8 +53,10 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
       
       const matchStatus = statusFilter === 'all' || lead.status === statusFilter;
       const matchRisk = riskFilter === 'all' || lead.overall_risk === riskFilter;
+      const matchState = stateFilter === 'all' || lead.estado === stateFilter;
+      const matchCity = cityFilter === 'all' || lead.cidade === cityFilter;
 
-      return matchSearch && matchStatus && matchRisk;
+      return matchSearch && matchStatus && matchRisk && matchState && matchCity;
     });
   }
 
@@ -69,7 +82,8 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
   return (
     <div className="space-y-4">
       {showFilters && (
-        <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+        <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col space-y-4">
+          
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input 
@@ -80,7 +94,8 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
               className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
             />
           </div>
-          <div className="flex gap-4 w-full md:w-auto">
+
+          <div className="flex flex-wrap gap-4 w-full">
             <div className="flex items-center space-x-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
               <Filter size={16} className="text-slate-400" />
               <select 
@@ -94,6 +109,7 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
                 ))}
               </select>
             </div>
+            
             <div className="flex items-center space-x-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
               <Activity size={16} className="text-slate-400" />
               <select 
@@ -105,6 +121,35 @@ export const LeadTable: React.FC<LeadTableProps> = ({ leads, limit, showFilters 
                 <option value="BAIXO">Baixo Risco</option>
                 <option value="MODERADO">Risco Moderado</option>
                 <option value="ALTO">Alto Risco</option>
+              </select>
+            </div>
+
+            <div className="flex items-center space-x-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+              <MapPin size={16} className="text-slate-400" />
+              <select 
+                value={stateFilter} 
+                onChange={handleStateChange}
+                className="bg-transparent border-none outline-none text-sm text-slate-600 font-medium cursor-pointer"
+              >
+                <option value="all">Todos os Estados</option>
+                {BRAZIL_STATES.map((state) => (
+                  <option key={state.uf} value={state.uf}>{state.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center space-x-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 flex-1 min-w-[150px]">
+              <MapPin size={16} className="text-slate-400" />
+              <select 
+                value={cityFilter} 
+                onChange={(e) => setCityFilter(e.target.value)}
+                disabled={stateFilter === 'all' || availableCities.length === 0}
+                className="bg-transparent border-none outline-none text-sm text-slate-600 font-medium cursor-pointer w-full disabled:opacity-50"
+              >
+                <option value="all">Todas as Cidades</option>
+                {availableCities.map((city) => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
               </select>
             </div>
           </div>
