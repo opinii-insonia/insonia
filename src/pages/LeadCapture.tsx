@@ -51,11 +51,9 @@ const LeadCapture = () => {
     const toastId = showLoading("Gerando seu relatório...");
 
     try {
-      // 1. Calcular resultados
       const epworthResult = calculateEpworth(epworthAnswers);
       const insomniaResult = calculateInsomnia(insomniaAnswers);
 
-      // 2. Montar objeto completo para o banco de dados
       const finalPayload = {
         ...userInfo,
         ...contactInfo,
@@ -65,16 +63,17 @@ const LeadCapture = () => {
         insomnia_classificacao: insomniaResult.classification,
         respostas_epworth: epworthAnswers,
         respostas_insomnia: insomniaAnswers,
-        data_resposta: new Date().toLocaleDateString('pt-BR')
       };
 
-      // 3. Enviar para API mock (preparado para Supabase/REST)
-      await submitTestResult(finalPayload);
+      const { error } = await submitTestResult(finalPayload);
+      
+      if (error) {
+        throw new Error("Erro ao salvar os dados no banco");
+      }
       
       dismissToast(toastId);
       showSuccess("Tudo pronto! Redirecionando...");
       
-      // 4. Ir para tela de resultado
       setTimeout(() => navigate('/resultado'), 1000);
       
     } catch (error) {
@@ -86,7 +85,6 @@ const LeadCapture = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContactInfo({ ...contactInfo, [e.target.name]: e.target.value });
-    // Limpar erro ao digitar
     if (errors[e.target.name as keyof typeof errors]) {
       setErrors({ ...errors, [e.target.name]: '' });
     }

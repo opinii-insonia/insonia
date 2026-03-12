@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { calculateOverallRisk } from '@/utils/calculateOverallRisk';
 
 export type LeadStatus = 'novo' | 'contato_pendente' | 'em_atendimento' | 'retorno_agendado' | 'convertido' | 'encerrado';
@@ -35,62 +35,73 @@ export interface Lead {
   origem: string;
 }
 
-export const submitTestResult = async (data: any): Promise<{ success: boolean; message: string; data?: Lead }> => {
-  const risk = calculateOverallRisk(data.epworth_classificacao, data.insomnia_classificacao);
-  
-  let prioridade: LeadPriority = 'baixa';
-  if (risk === 'ALTO') prioridade = 'alta';
-  else if (risk === 'MODERADO') prioridade = 'media';
+export const submitTestResult = async (data: any) => {
+  try {
+    const risk = calculateOverallRisk(data.epworth_classificacao, data.insomnia_classificacao);
+    
+    let prioridade: LeadPriority = 'baixa';
+    if (risk === 'ALTO') prioridade = 'alta';
+    else if (risk === 'MODERADO') prioridade = 'media';
 
-  const leadData = {
-    nome: data.nome,
-    idade: data.idade,
-    sexo: data.sexo,
-    estado: data.estado,
-    cidade: data.cidade,
-    telefone: data.telefone,
-    email: data.email,
-    epworth_score: data.epworth_score,
-    epworth_classificacao: data.epworth_classificacao,
-    insomnia_score: data.insomnia_score,
-    insomnia_classificacao: data.insomnia_classificacao,
-    overall_risk: risk,
-    data_resposta: new Date().toISOString(),
-    status: 'novo',
-    prioridade,
-    origem: 'Plataforma Web',
-    observacoes: ''
-  };
+    const leadData = {
+      nome: data.nome,
+      idade: data.idade,
+      sexo: data.sexo,
+      estado: data.estado,
+      cidade: data.cidade,
+      telefone: data.telefone,
+      email: data.email,
+      epworth_score: data.epworth_score,
+      epworth_classificacao: data.epworth_classificacao,
+      insomnia_score: data.insomnia_score,
+      insomnia_classificacao: data.insomnia_classificacao,
+      overall_risk: risk,
+      data_resposta: new Date().toISOString(),
+      status: 'novo',
+      prioridade,
+      origem: 'Plataforma Web',
+      observacoes: ''
+    };
 
-  const { data: result, error } = await supabase.from('leads').insert([leadData]).select().single();
-  
-  if (error) {
-    console.error("Erro ao salvar lead:", error);
-    throw new Error("Erro ao salvar os dados");
+    const { data: result, error } = await supabase.from('leads').insert([leadData]).select().single();
+    
+    if (error) {
+      console.error("Erro ao salvar lead no Supabase:", error);
+      return { data: null, error };
+    }
+
+    // Cria o evento inicial na linha do tempo
+    await supabase.from('lead_timeline').insert([{
+      lead_id: result.id,
+      type: 'criacao',
+      description: 'Avaliação concluída pelo paciente.',
+      date: new Date().toISOString()
+    }]);
+
+    return { data: result as Lead, error: null };
+  } catch (err) {
+    console.error("Erro inesperado em submitTestResult:", err);
+    return { data: null, error: err };
   }
-
-  // Cria o evento inicial na linha do tempo
-  await supabase.from('lead_timeline').insert([{
-    lead_id: result.id,
-    type: 'criacao',
-    description: 'Avaliação concluída pelo paciente.',
-    date: new Date().toISOString()
-  }]);
-
-  return { success: true, data: result as Lead, message: "Dados salvos com sucesso!" };
 };
 
-export const fetchLeads = async (): Promise<Lead[]> => {
-  const { data, error } = await supabase
-    .from('leads')
-    .select('*')
-    .order('data_resposta', { ascending: false });
+export const getTestResults = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .order('data_resposta', { ascending: false });
 
-  if (error) {
-    console.error("Erro ao buscar leads:", error);
-    throw error;
+    if (error) {
+      console.error("Erro ao buscar leads no Supabase:", error);
+      return { data: null, error };
+    }
+    
+    return { data: data as Lead[], error: null };
+  } catch (err) {
+    console.error("Erro inesperado em getTestResults:", err);
+    return { data: null, error: err };
   }
-  return data as Lead[] || [];
 };
 
 export const fetchLeadById = async (id: string): Promise<Lead | null> => {
@@ -102,7 +113,7 @@ export const fetchLeadById = async (id: string): Promise<Lead | null> => {
 
   if (leadError || !lead) return null;
 
-  const { data: timeline, error: timelineError } = await supabase
+  const { data: timeline } = await supabase
     .from('lead_timeline')
     .select('*')
     .eq('lead_id', id)

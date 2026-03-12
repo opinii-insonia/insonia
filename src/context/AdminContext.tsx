@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Lead, fetchLeads, updateLeadData, appendTimelineEvent } from '@/services/api';
+import { Lead, getTestResults, updateLeadData, appendTimelineEvent } from '@/services/api';
 import { toast } from 'sonner';
 import { useAuthContext } from './AuthContext';
 
@@ -20,8 +20,13 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const refreshLeads = async () => {
     try {
       setIsLoading(true);
-      const data = await fetchLeads();
-      setLeads(data);
+      const { data, error } = await getTestResults();
+      
+      if (error) {
+        throw error;
+      }
+      
+      setLeads(data || []);
     } catch (error) {
       toast.error("Erro ao carregar os leads.");
       console.error(error);
